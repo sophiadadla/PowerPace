@@ -1,1 +1,1 @@
-made with Slack API
+made with Strava API
