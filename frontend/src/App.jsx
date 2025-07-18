@@ -1,41 +1,69 @@
-import { useEffect } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+import { useEffect, useState } from 'react'; 
 import './App.css';
 
 function App() {
+  const [athleteData, setAthleteData] = useState(null);
+  const [activitiesData, setActivitiesData] = useState(null);
+  const [activityData, setActivityData] = useState(null);
+
   useEffect(() => {
-    fetch('/api/athlete')
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
+    const fetchAthlete = async () => {
+      try {
+        const response = await fetch('/api/athlete');
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP ${response.status} - ${errorText}`);
         }
-        return res.json();
-      })
-      .then((json) => {
-        console.log('Strava athlete:', json); 
-      })
-      .catch((err) => console.error(err));
-  }, []); 
+        const result = await response.json();
+        setAthleteData(result);
+      } catch (error) {
+        console.error('Error fetching athlete:', error);
+      }
+    };
+
+    const fetchActivities = async () => {
+      try {
+        const response = await fetch('/api/athlete/activities');
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP ${response.status} - ${errorText}`);
+        }
+        const result = await response.json();
+        setActivitiesData(result);
+      } catch (error) {
+        console.error('Error fetching activities:', error);
+      }
+    };
+
+    const fetchActivity = async (id) => {
+      try {
+        const response = await fetch('/api/activities/' + id);
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP ${response.status} - ${errorText}`);
+        }
+        const result = await response.json();
+        setActivityData(result);
+      } catch (error) {
+        console.error('Error fetching activity:', error);
+        throw error;
+      }
+    };
+
+    fetchActivity("15156812321");
+    fetchAthlete();
+    fetchActivities();
+  }, []);
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div id="activities" className='bottomSection'>
+        {activityData ? (
+          <pre>{JSON.stringify(activityData, null, 2)}</pre>
+        ) : (
+          <p>Loading activities...</p>
+        )}
       </div>
-      <div className="card">
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   );
 }

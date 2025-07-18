@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import org.springframework.beans.factory.annotation.Value;
-
+import java.util.List;
 import reactor.core.publisher.Mono; 
 import java.util.Map;   
 
@@ -31,4 +31,20 @@ public class StravaService {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<>() {}); 
     }
+
+
+    public Mono<List<Map<String, Object>>> getActivities() {
+        return webClient.get()
+                .uri("/athlete/activities")
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<>() {});
+    }
+
+    public Mono<Map<String, Object>> getActivity(String id) {
+        return webClient.get()
+                .uri("/activities/" + id)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {});
+    }
+
 }
